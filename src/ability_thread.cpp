@@ -360,7 +360,7 @@ void AbilityThread::AttachBundle(uint64_t token)
         HILOG_ERROR(HILOG_MODULE_APP, "ams identity is null");
         return;
     }
-    int32_t ret = RegisteIpcCallback(AbilityScheduler::AmsCallback, 0, IPC_WAIT_FOREVER, identity_, abilityScheduler_);
+    int32_t ret = RegisterIpcCallback(AbilityScheduler::AmsCallback, 0, IPC_WAIT_FOREVER, identity_, abilityScheduler_);
     if (ret != 0) {
         HILOG_ERROR(HILOG_MODULE_APP, "RegisterIpcCallback failed");
         AdapterFree(identity_);
