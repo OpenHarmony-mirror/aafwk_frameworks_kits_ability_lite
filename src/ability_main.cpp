@@ -15,12 +15,33 @@
 
 #include "ability_main.h"
 
+#include <cerrno>
+#include <climits>
+
 #include "ability_thread.h"
 #include "liteipc_pri.h"
+#include "log.h"
 
-int AbilityMain(uint64_t token)
+namespace {
+    constexpr int HEX = 10;
+}
+
+int AbilityMain(const char *token)
 {
+    if (token == nullptr) {
+        return -1;
+    }
+
     ResetLiteIpc();
-    OHOS::AbilityThread::ThreadMain(token);
+    char *endPtr = nullptr;
+    errno = 0;
+    uint64_t tokenId = std::strtoull(token, &endPtr, HEX);
+    if ((errno == ERANGE && tokenId == ULLONG_MAX) || (errno != 0 && tokenId == 0) ||
+        endPtr == nullptr || *endPtr != '\0') {
+        HILOG_ERROR(HILOG_MODULE_APP, "token is invalid");
+        return -1;
+    }
+
+    OHOS::AbilityThread::ThreadMain(tokenId);
     return 0;
 }
