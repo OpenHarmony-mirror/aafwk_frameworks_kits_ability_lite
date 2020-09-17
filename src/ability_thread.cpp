@@ -46,7 +46,6 @@ namespace {
 constexpr static char PATH_SEPARATOR[] = "/";
 constexpr static char LIB_PREFIX[] = "/lib";
 constexpr static char LIB_SUFFIX[] = ".so";
-constexpr static char ACE_LIB_PATH[] = "/usr/lib/libace_lite.so";
 constexpr static char ACE_ABILITY_NAME[] = "AceAbility";
 #ifdef ABILITY_WINDOW_SUPPORT
 constexpr static char FONT_PATH[] = "/storage/data/";
@@ -172,16 +171,13 @@ void AbilityThread::PerformAppInit(const AppInfo &appInfo)
             if (realpath(modulePath.c_str(), realPath) == nullptr) {
                 continue;
             }
-            modulePath = realPath;
-        } else {
-            modulePath = ACE_LIB_PATH;
+            void *handle = dlopen(static_cast<char *>(realPath), RTLD_NOW | RTLD_GLOBAL);
+            if (handle == nullptr) {
+                HILOG_ERROR(HILOG_MODULE_APP, "Fail to dlopen %{public}s, [%{public}s]", modulePath.c_str(), dlerror());
+                exit(-1);
+            }
+            handle_.emplace_front(handle);
         }
-        void *handle = dlopen(modulePath.c_str(), RTLD_NOW | RTLD_GLOBAL);
-        if (handle == nullptr) {
-            HILOG_ERROR(HILOG_MODULE_APP, "Fail to dlopen %{public}s, [%{public}s]", modulePath.c_str(), dlerror());
-            exit(-1);
-        }
-        handle_.emplace_front(handle);
     }
 
     int ret = UtilsSetEnv(GetDataPath());
