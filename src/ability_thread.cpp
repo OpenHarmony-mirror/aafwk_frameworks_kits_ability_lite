@@ -50,7 +50,6 @@ constexpr static char ACE_LIB_PATH[] = "/usr/lib/libace_lite.so";
 constexpr static char ACE_ABILITY_NAME[] = "AceAbility";
 #ifdef ABILITY_WINDOW_SUPPORT
 constexpr static char FONT_PATH[] = "/storage/data/";
-constexpr static char FONT_NAME[] = "SourceHanSansSC-Regular.otf";
 constexpr static int UI_TASK_HANDLER_PERIOD = 10 * 1000; // UI task sleep period is 10ms
 constexpr static char UI_TASK_THREAD_NAME[] = "UITaskPost";
 static uint32_t g_fontPsramBaseAddr[MIN_FONT_PSRAM_LENGTH / 4];
@@ -115,7 +114,7 @@ void AbilityThread::InitUITaskEnv()
     HILOG_INFO(HILOG_MODULE_APP, "Hal and UI init");
     GraphicStartUp::Init();
     GraphicStartUp::InitFontEngine(reinterpret_cast<uintptr_t>(g_fontPsramBaseAddr), MIN_FONT_PSRAM_LENGTH,
-        const_cast<char *>(FONT_PATH), const_cast<char *>(FONT_NAME));
+        const_cast<char *>(FONT_PATH), DEFAULT_VECTOR_FONT_FILENAME);
     auto screenDevice = new ScreenDevice();
     ScreenDeviceProxy::GetInstance()->SetDevice(screenDevice);
 
