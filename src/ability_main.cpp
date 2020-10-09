@@ -13,37 +13,35 @@
  * limitations under the License.
  */
 
+#include "ability_main.h"
+
 #include <cerrno>
 #include <climits>
-#include <cstddef>
-#include <sys/prctl.h>
 
 #include "ability_thread.h"
+#include "liteipc_pri.h"
 #include "log.h"
 
 namespace {
     constexpr int HEX = 10;
-    constexpr int TOKEN_INDEX = 1;
-    constexpr int NAME_INDEX = 2;
 }
 
-int main(int argc, char *argv[])
+int AbilityMain(const char *token)
 {
-    if (argc != NAME_INDEX + 1) {
-        HILOG_ERROR(HILOG_MODULE_APP, "arg number is not %{public}d", NAME_INDEX + 1);
+    if (token == nullptr) {
         return -1;
     }
+
+    ResetLiteIpc();
     char *endPtr = nullptr;
     errno = 0;
-    uint64_t token = std::strtoull(argv[TOKEN_INDEX], &endPtr, HEX);
-    if ((errno == ERANGE && token == ULLONG_MAX) || (errno != 0 && token == 0) ||
+    uint64_t tokenId = std::strtoull(token, &endPtr, HEX);
+    if ((errno == ERANGE && tokenId == ULLONG_MAX) || (errno != 0 && tokenId == 0) ||
         endPtr == nullptr || *endPtr != '\0') {
         HILOG_ERROR(HILOG_MODULE_APP, "token is invalid");
         return -1;
     }
-    // set process name
-    (void) prctl(PR_SET_NAME, argv[NAME_INDEX]);
 
-    OHOS::AbilityThread::ThreadMain(token);
+    OHOS::AbilityThread::ThreadMain(tokenId);
     return 0;
 }
